@@ -17,6 +17,7 @@ import { Loader2, X } from "lucide-react";
 import { signUp } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
@@ -42,8 +43,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className="w-full flex items-center justify-center p-4">
-      <Card className="z-50 rounded-md rounded-t-none max-w-md">
+    <div className="w-full min-h-screen flex items-start justify-center pt-36 pb-8 px-4">
+      <Card className="w-full max-w-sm flex flex-col gap-4">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Sign Up</CardTitle>
           <CardDescription className="text-xs md:text-sm">
@@ -180,6 +181,12 @@ export default function SignUp() {
                 "Create an account"
               )}
             </Button>
+            <p className="text-xs text-center">
+              Already have an account?{" "}
+              <Link href="/signin" className="text-blue-500">
+                Sign In
+              </Link>
+            </p>
           </div>
         </CardContent>
         <CardFooter>

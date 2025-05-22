@@ -23,9 +23,9 @@ export default function SignIn() {
   const [rememberMe, setRememberMe] = useState(false);
 
   return (
-    <div className="w-full flex items-center justify-center p-4">
-      <Card className="max-w-md flex flex-col gap-4">
-        <CardHeader>
+    <div className="w-full min-h-screen flex items-start justify-center pt-48 pb-8 px-4">
+      <Card className="w-full max-w-sm flex flex-col gap-4">
+        <CardHeader className="text-center">
           <CardTitle className="text-lg md:text-xl">Sign In</CardTitle>
           <CardDescription className="text-xs md:text-sm">
             Enter your email below to sign in to your account
@@ -107,6 +107,12 @@ export default function SignIn() {
                 <p> Sign In </p>
               )}
             </Button>
+            <p className="text-xs text-center">
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-blue-500">
+                Sign Up
+              </Link>
+            </p>
           </div>
         </CardContent>
       </Card>
