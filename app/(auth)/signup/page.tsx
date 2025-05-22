@@ -181,9 +181,9 @@ export default function SignUp() {
                 "Create an account"
               )}
             </Button>
-            <p className="text-xs text-center">
+            <p className="text-sm text-center">
               Already have an account?{" "}
-              <Link href="/signin" className="text-blue-500">
+              <Link href="/signin" className="underline">
                 Sign In
               </Link>
             </p>
