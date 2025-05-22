@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { signIn, useSession } from "@/lib/auth-client";
+import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -121,10 +121,10 @@ export default function SignIn() {
                       callbackURL: "/",
                     },
                     {
-                      onRequest: (ctx) => {
+                      onRequest: () => {
                         setLoading(true);
                       },
-                      onResponse: (ctx) => {
+                      onResponse: () => {
                         setLoading(false);
                       },
                     }
@@ -158,7 +158,7 @@ export default function SignIn() {
               </Button>
             </div>
             <div className="text-center text-sm">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="underline">
                 Sign up
               </Link>

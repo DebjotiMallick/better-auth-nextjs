@@ -7,13 +7,12 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { authClient, signIn } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 
 export default function ForgotPassword() {
@@ -53,8 +52,8 @@ export default function ForgotPassword() {
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Reset Password</CardTitle>
           <CardDescription className="text-xs md:text-sm">
-            Enter your email address and we'll send you a link to reset your
-            password if you have an account.
+            Enter your email address and we&apos;ll send you a link to reset
+            your password if you have an account.
           </CardDescription>
         </CardHeader>
         <CardContent>

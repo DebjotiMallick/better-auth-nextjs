@@ -21,7 +21,6 @@ import { toast } from "sonner";
 const Navbar = () => {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  const user = session?.user;
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
