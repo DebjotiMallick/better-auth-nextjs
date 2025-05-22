@@ -67,7 +67,7 @@ export default function ResetPassword() {
 
       // Redirect to sign-in after a short delay
       setTimeout(() => {
-        router.push("/sign-in");
+        router.push("/signin");
       }, 3000);
     } catch (err) {
       setError("Failed to reset password. The link may have expired.");
@@ -78,8 +78,8 @@ export default function ResetPassword() {
   };
 
   return (
-    <div className="w-full flex items-center justify-center p-4">
-      <Card className="max-w-md flex flex-col gap-4">
+    <div className="w-full min-h-screen flex items-start justify-center pt-48 pb-8 px-4">
+      <Card className="w-full max-w-sm flex flex-col gap-4">
         <CardHeader>
           <CardTitle className="text-lg md:text-xl">Set New Password</CardTitle>
           <CardDescription className="text-xs md:text-sm">
@@ -93,7 +93,7 @@ export default function ResetPassword() {
                 Password reset successful! You will be redirected to the sign-in
                 page.
               </p>
-              <Link href="/sign-in" className="text-primary underline">
+              <Link href="/signin" className="text-primary underline">
                 Go to sign-in
               </Link>
             </div>
@@ -145,10 +145,7 @@ export default function ResetPassword() {
               </Button>
 
               <div className="text-center mt-4">
-                <Link
-                  href="/sign-in"
-                  className="text-sm text-primary underline"
-                >
+                <Link href="/signin" className="text-sm text-primary underline">
                   Back to sign-in
                 </Link>
               </div>
