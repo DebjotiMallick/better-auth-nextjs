@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, User, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
@@ -20,9 +20,17 @@ import { toast } from "sonner";
 
 const Navbar = () => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
   const user = session?.user;
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Session loading is complete when status changes from 'loading' to either 'authenticated' or 'unauthenticated'
+    if (!isPending) {
+      setIsLoading(false);
+    }
+  }, [isPending]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -33,6 +41,40 @@ const Navbar = () => {
     router.push("/");
     toast.success("Successfully logged out!");
   };
+
+  // Show a loading skeleton while checking auth state
+  if (isLoading) {
+    return (
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="w-full max-w-[100vw] px-3 md:px-5 mx-auto flex h-16 items-center justify-between">
+          <div className="flex items-center space-x-6">
+            <div className="h-6 w-24 bg-muted rounded animate-pulse" />
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="relative h-8 w-8 rounded-full overflow-hidden bg-muted">
+              <div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
+                style={{
+                  animation: "shimmer 2s infinite linear",
+                  transform: "translateX(-100%)",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <style jsx global>{`
+          @keyframes shimmer {
+            0% {
+              transform: translateX(-100%);
+            }
+            100% {
+              transform: translateX(100%);
+            }
+          }
+        `}</style>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -104,7 +146,7 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => handleSignOut()}
+                  onClick={handleSignOut}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
@@ -185,7 +227,7 @@ const Navbar = () => {
                         variant="outline"
                         className="w-full justify-start text-destructive"
                         onClick={() => {
-                          signOut();
+                          handleSignOut();
                           setIsOpen(false);
                         }}
                       >

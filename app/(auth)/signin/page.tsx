@@ -24,26 +24,6 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      const { error } = await signIn.email({
-        email,
-        password,
-        callbackURL: "/",
-      });
-      if (error) {
-        throw new Error(error.message || "Failed to sign in");
-      }
-      toast.success("Successfully logged in!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to sign in");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className="w-full min-h-screen flex items-start justify-center pt-48 pb-8 px-4">
       <Card className="w-full max-w-sm flex flex-col gap-4">
@@ -54,7 +34,7 @@ export default function SignIn() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid gap-4">
+          <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -93,14 +73,35 @@ export default function SignIn() {
               />
               <Label htmlFor="remember">Remember me</Label>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading}
+              onClick={async () => {
+                try {
+                  setLoading(true);
+                  const { error } = await signIn.email({
+                    email,
+                    password,
+                    callbackURL: "/",
+                  });
+                  if (error) {
+                    throw new Error(error.message || "Failed to sign in");
+                  }
+                  toast.success("Successfully logged in!");
+                } catch (error) {
+                  toast.error(
+                    error instanceof Error ? error.message : "Failed to sign in"
+                  );
+                } finally {
+                  setLoading(false);
+                }
+              }}
+            >
               {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing in...
-                </>
+                <Loader2 size={16} className="animate-spin" />
               ) : (
-                "Sign In"
+                <p> Login </p>
               )}
             </Button>
             <div
@@ -162,7 +163,7 @@ export default function SignIn() {
                 Sign up
               </Link>
             </div>
-          </form>
+          </div>
         </CardContent>
       </Card>
     </div>
