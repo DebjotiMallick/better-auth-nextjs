@@ -1,6 +1,21 @@
+"use client";
+
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("success") === "true") {
+      toast.success("Successfully logged in!", { duration: 3000 });
+      // Remove the success parameter from the URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("success");
+      window.history.replaceState({}, "", url);
+    }
+  }, [searchParams]);
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-[calc(100vh-5rem)] p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">

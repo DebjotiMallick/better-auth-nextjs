@@ -48,10 +48,34 @@ const Navbar = () => {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="w-full max-w-[100vw] px-3 md:px-5 mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div className="h-6 w-24 bg-muted rounded animate-pulse" />
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="text-xl font-bold">YourLogo</span>
+            </Link>
+            <nav className="hidden md:flex items-center ml-10 space-x-6 text-sm font-medium">
+              <Link
+                href="/"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                Home
+              </Link>
+              <Link
+                href="/about"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                Contact
+              </Link>
+            </nav>
           </div>
+
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             <div className="relative h-8 w-8 rounded-full overflow-hidden bg-muted">
               <div
                 className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent"
@@ -82,7 +106,7 @@ const Navbar = () => {
       <div className="w-full max-w-[100vw] px-3 md:px-5 mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            {/* <span className="text-xl font-bold">YourLogo</span> */}
+            <span className="text-xl font-bold">YourLogo</span>
           </Link>
           <nav className="hidden md:flex items-center ml-10 space-x-6 text-sm font-medium">
             <Link
@@ -108,9 +132,9 @@ const Navbar = () => {
 
         {/* Auth Buttons - Desktop */}
         <div className="hidden md:flex items-center space-x-4">
+          <ThemeToggle />
           {session ? (
             <>
-              <ThemeToggle />
               {session?.user?.role === "admin" ||
               (process.env.NEXT_PUBLIC_ADMIN_EMAILS &&
                 JSON.parse(process.env.NEXT_PUBLIC_ADMIN_EMAILS).includes(

@@ -22,6 +22,7 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
   return (
@@ -83,12 +84,12 @@ export default function SignIn() {
                   const { error } = await signIn.email({
                     email,
                     password,
-                    callbackURL: "/",
+                    callbackURL: "/?success=true",
                   });
                   if (error) {
                     throw new Error(error.message || "Failed to sign in");
                   }
-                  toast.success("Successfully logged in!");
+                  // toast.success("Successfully logged in!");
                 } catch (error) {
                   toast.error(
                     error instanceof Error ? error.message : "Failed to sign in"
@@ -115,20 +116,25 @@ export default function SignIn() {
                 className={cn("w-full gap-2")}
                 disabled={loading}
                 onClick={async () => {
-                  await signIn.social(
-                    {
+                  try {
+                    setGoogleLoading(true);
+                    const { error } = await signIn.social({
                       provider: "google",
-                      callbackURL: "/",
-                    },
-                    {
-                      onRequest: () => {
-                        setLoading(true);
-                      },
-                      onResponse: () => {
-                        setLoading(false);
-                      },
+                      callbackURL: "/?success=true",
+                    });
+                    if (error) {
+                      throw new Error(error.message || "Failed to sign in");
                     }
-                  );
+                    // toast.success("Successfully logged in!");
+                  } catch (error) {
+                    toast.error(
+                      error instanceof Error
+                        ? error.message
+                        : "Failed to sign in"
+                    );
+                  } finally {
+                    setGoogleLoading(false);
+                  }
                 }}
               >
                 <svg
@@ -154,7 +160,11 @@ export default function SignIn() {
                     d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0C79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
                   ></path>
                 </svg>
-                Sign in with Google
+                {googleLoading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <p> Sign in with Google </p>
+                )}
               </Button>
             </div>
             <div className="text-center text-sm">

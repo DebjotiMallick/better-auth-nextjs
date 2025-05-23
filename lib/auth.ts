@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import { resend } from "./email/resend";
 import { reactResetPasswordEmail } from "./email/reset-password";
-import { openAPI, admin, oneTap, twoFactor } from "better-auth/plugins";
+import { openAPI, admin, oneTap, twoFactor, haveIBeenPwned } from "better-auth/plugins";
 import { reactVerifyEmailTemplate } from "./email/verify-email";
 
 export const auth = betterAuth({
@@ -46,8 +46,10 @@ export const auth = betterAuth({
   }, 
   plugins: [
     openAPI(),
+    haveIBeenPwned(),
     oneTap(),
     twoFactor({
+      issuer: process.env.TWO_FACTOR_ISSUER,
       otpOptions: {
         async sendOTP({ user, otp }) {
           await resend.emails.send({

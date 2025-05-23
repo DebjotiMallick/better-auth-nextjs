@@ -279,7 +279,7 @@ export default function UserCard(props: {
                     </DialogTitle>
                     <DialogDescription>
                       {session?.user.twoFactorEnabled
-                        ? "Disable the second factor authentication from your account"
+                        ? "Disable the two factor authentication from your account"
                         : "Enable 2FA to secure your account"}
                     </DialogDescription>
                   </DialogHeader>
