@@ -112,15 +112,17 @@ const Navbar = () => {
             <>
               <ThemeToggle />
               {session?.user?.role === "admin" ||
-                (session?.user?.email ===
-                  process.env.NEXT_PUBLIC_ADMIN_EMAILS && (
-                  <Link
-                    href="/admin"
-                    className="transition-colors hover:text-foreground/80 text-foreground/60"
-                  >
-                    Admin
-                  </Link>
-                ))}
+              (process.env.NEXT_PUBLIC_ADMIN_EMAILS &&
+                JSON.parse(process.env.NEXT_PUBLIC_ADMIN_EMAILS).includes(
+                  session?.user?.email
+                )) ? (
+                <Link
+                  href="/admin"
+                  className="transition-colors hover:text-foreground/80 text-foreground/60"
+                >
+                  Admin
+                </Link>
+              ) : null}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button

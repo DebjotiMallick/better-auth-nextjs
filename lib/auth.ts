@@ -60,7 +60,7 @@ export const auth = betterAuth({
       },
     }),
     admin({
-      adminUserIds: ["jg8WikNU6tl4SQ6f5hfg8XhN6K1eVjSV"],
+      adminUserIds: process.env.ADMIN_USER_IDS ? JSON.parse(process.env.ADMIN_USER_IDS) : [],
     }),
   ]
 });
