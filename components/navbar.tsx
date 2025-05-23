@@ -17,6 +17,7 @@ import {
 } from "./ui/dropdown-menu";
 import { useSession, signOut } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { ThemeToggle } from "./theme-toggle";
 
 const Navbar = () => {
   const router = useRouter();
@@ -109,12 +110,17 @@ const Navbar = () => {
         <div className="hidden md:flex items-center space-x-4">
           {session ? (
             <>
-              <Link
-                href="/admin"
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                Admin
-              </Link>
+              <ThemeToggle />
+              {session?.user?.role === "admin" ||
+                (session?.user?.email ===
+                  process.env.NEXT_PUBLIC_ADMIN_EMAILS && (
+                  <Link
+                    href="/admin"
+                    className="transition-colors hover:text-foreground/80 text-foreground/60"
+                  >
+                    Admin
+                  </Link>
+                ))}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
