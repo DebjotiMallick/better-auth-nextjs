@@ -22,3 +22,5 @@ export const authClient = createAuthClient({
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;
+
+authClient.$store.listen("$sessionSignal", async () => {});

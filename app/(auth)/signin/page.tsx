@@ -84,12 +84,12 @@ export default function SignIn() {
                   const { error } = await signIn.email({
                     email,
                     password,
-                    callbackURL: "/?success=true",
+                    callbackURL: "/",
                   });
                   if (error) {
                     throw new Error(error.message || "Failed to sign in");
                   }
-                  // toast.success("Successfully logged in!");
+                  toast.success("Successfully logged in!");
                 } catch (error) {
                   toast.error(
                     error instanceof Error ? error.message : "Failed to sign in"
@@ -120,12 +120,12 @@ export default function SignIn() {
                     setGoogleLoading(true);
                     const { error } = await signIn.social({
                       provider: "google",
-                      callbackURL: "/?success=true",
+                      callbackURL: "/",
                     });
                     if (error) {
                       throw new Error(error.message || "Failed to sign in");
                     }
-                    // toast.success("Successfully logged in!");
+                    toast.success("Successfully logged in!");
                   } catch (error) {
                     toast.error(
                       error instanceof Error

@@ -11,6 +11,8 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    autoSignIn: true,
     async sendResetPassword({ user, url }) {
       await resend.emails.send({
         from: process.env.EMAILS_FROM as string,
@@ -40,7 +42,7 @@ export const auth = betterAuth({
   },
   socialProviders: { 
     google: { 
-       clientId: process.env.GOOGLE_CLIENT_ID as string, 
+       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string, 
        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
     }, 
   }, 
