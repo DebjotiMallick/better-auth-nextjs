@@ -63,7 +63,7 @@ export default function ForgotPassword() {
                 Password reset email sent! Please check your inbox and follow
                 the instructions.
               </p>
-              <Link href="/sign-in" className="text-primary underline">
+              <Link href="/signin" className="text-primary underline">
                 Return to sign-in
               </Link>
             </div>
@@ -100,10 +100,7 @@ export default function ForgotPassword() {
               </Button>
 
               <div className="text-center mt-4">
-                <Link
-                  href="/sign-in"
-                  className="text-sm text-primary underline"
-                >
+                <Link href="/signin" className="text-sm text-primary underline">
                   Back to sign-in
                 </Link>
               </div>
