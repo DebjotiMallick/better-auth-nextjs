@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { Pool } from "pg";
 import { resend } from "./email/resend";
 import { reactResetPasswordEmail } from "./email/reset-password";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
   database: new Pool({
@@ -30,5 +30,8 @@ export const auth = betterAuth({
   }, 
   plugins: [
     openAPI(),
+    admin({
+      adminUserIds: ["DKdtKmS3KBAeZRyIpvFXqKntRp3LWkyQ"],
+    }),
   ]
 });
