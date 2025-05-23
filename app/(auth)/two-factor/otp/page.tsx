@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
+import { authClient, useSession } from "@/lib/auth-client";
 import { AlertCircle, CheckCircle2, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -22,8 +22,8 @@ export default function Component() {
   const [isError, setIsError] = useState(false);
   const [isValidated, setIsValidated] = useState(false);
 
-  // In a real app, this email would come from your authentication context
-  const userEmail = "user@example.com";
+  const { data } = useSession();
+  const userEmail = data?.user.email;
 
   const requestOTP = async () => {
     await authClient.twoFactor.sendOtp();

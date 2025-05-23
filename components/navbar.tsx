@@ -22,7 +22,6 @@ import { ThemeToggle } from "./theme-toggle";
 const Navbar = () => {
   const router = useRouter();
   const { data: session, isPending } = useSession();
-  console.log(session);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 

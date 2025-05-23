@@ -175,7 +175,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="mx-auto p-4 space-y-8">
+    <div className="min-h-[calc(100vh-5rem)] mx-auto p-4 space-y-8">
       <Toaster richColors />
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
