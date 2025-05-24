@@ -31,6 +31,7 @@ import {
   RefreshCw,
   UserCircle,
   Calendar as CalendarIcon,
+  Pencil,
 } from "lucide-react";
 import {
   Dialog,
@@ -68,6 +69,12 @@ export default function AdminDashboard() {
     reason: "",
     expirationDate: undefined as Date | undefined,
   });
+  type UserRole = "user" | "admin";
+  const [editingUser, setEditingUser] = useState<{
+    id: string;
+    currentRole: UserRole;
+  } | null>(null);
+  const [selectedRole, setSelectedRole] = useState<UserRole>("user");
 
   const { data: users, isLoading: isUsersLoading } = useQuery({
     queryKey: ["users"],
@@ -106,6 +113,32 @@ export default function AdminDashboard() {
       });
     } catch (error: any) {
       toast.error(error.message || "Failed to create user");
+    } finally {
+      setIsLoading(undefined);
+    }
+  };
+
+  const handleEditUser = (id: string, currentRole: UserRole) => {
+    setEditingUser({ id, currentRole });
+    setSelectedRole(currentRole);
+  };
+
+  const handleUpdateRole = async () => {
+    if (!editingUser) return;
+
+    setIsLoading(`edit-${editingUser.id}`);
+    try {
+      await authClient.admin.setRole({
+        userId: editingUser.id,
+        role: selectedRole,
+      });
+      toast.success("User role updated successfully");
+      queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+      setEditingUser(null);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update user role");
     } finally {
       setIsLoading(undefined);
     }
@@ -261,6 +294,52 @@ export default function AdminDashboard() {
               </form>
             </DialogContent>
           </Dialog>
+          <Dialog
+            open={!!editingUser}
+            onOpenChange={(open) => !open && setEditingUser(null)}
+          >
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit User Role</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Select Role</Label>
+                  <Select
+                    value={selectedRole}
+                    onValueChange={(value: string) =>
+                      setSelectedRole(value as UserRole)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setEditingUser(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleUpdateRole}
+                    disabled={isLoading?.startsWith("edit")}
+                  >
+                    {isLoading === `edit-${editingUser?.id}` ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : null}
+                    Update Role
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
           <Dialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
             <DialogContent>
               <DialogHeader>
@@ -359,6 +438,23 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            handleEditUser(
+                              user.id,
+                              (user.role as UserRole) || "user"
+                            )
+                          }
+                          disabled={isLoading?.startsWith("edit")}
+                        >
+                          {isLoading === `edit-${user.id}` ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Pencil className="h-4 w-4" />
+                          )}
+                        </Button>
                         <Button
                           variant="destructive"
                           size="sm"
