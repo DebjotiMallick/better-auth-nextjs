@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
-import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -21,13 +21,16 @@ export default function Component() {
   const [totpCode, setTotpCode] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (totpCode.length !== 6 || !/^\d+$/.test(totpCode)) {
       setError("TOTP code must be 6 digits");
+      setLoading(false);
       return;
     }
     authClient.twoFactor
@@ -42,6 +45,9 @@ export default function Component() {
         } else {
           setError("Invalid TOTP code");
         }
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -78,7 +84,11 @@ export default function Component() {
                 </div>
               )}
               <Button type="submit" className="w-full mt-4">
-                Verify
+                {loading ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  "Verify"
+                )}
               </Button>
             </form>
           ) : (
