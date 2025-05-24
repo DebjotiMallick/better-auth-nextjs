@@ -75,14 +75,23 @@ export default function AdminDashboard() {
     reason: "",
     expirationDate: undefined as Date | undefined,
   });
+
+  // Added twoFactorEnabled as a type in listUsers response
   type UserRole = "user" | "admin";
+  type ListUsersReturn = Awaited<ReturnType<typeof authClient.admin.listUsers>>;
+  type BaseUser = ListUsersReturn["users"][number];
+  interface UserWithTwoFactor extends BaseUser {
+    twoFactorEnabled?: boolean;
+  }
   const [editingUser, setEditingUser] = useState<{
     id: string;
     currentRole: UserRole;
   } | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole>("user");
 
-  const { data: users, isLoading: isUsersLoading } = useQuery({
+  const { data: users, isLoading: isUsersLoading } = useQuery<
+    UserWithTwoFactor[]
+  >({
     queryKey: ["users"],
     queryFn: async () => {
       const data = await authClient.admin.listUsers(
@@ -231,7 +240,7 @@ export default function AdminDashboard() {
                 <DialogTitle>Create New User</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleCreateUser} className="space-y-4">
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
@@ -243,7 +252,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <PasswordInput
                     id="password"
@@ -255,7 +264,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
@@ -266,7 +275,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
                   <Select
                     value={newUser.role}
@@ -422,28 +431,38 @@ export default function AdminDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Banned</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead className="text-center">Role</TableHead>
+                  <TableHead className="text-center">2FA</TableHead>
+                  <TableHead className="text-center">Banned</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users?.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell>{user.email}</TableCell>
                     <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.role || "user"}</TableCell>
-                    <TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell className="text-center">
+                      {user.role || "user"}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {user.twoFactorEnabled ? (
+                        <Badge variant="default">Enabled</Badge>
+                      ) : (
+                        <Badge variant="destructive">Disabled</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
                       {user.banned ? (
                         <Badge variant="destructive">Yes</Badge>
                       ) : (
-                        <Badge variant="outline">No</Badge>
+                        <Badge variant="default">No</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
+                    <TableCell className="text-center">
+                      <div className="flex justify-center space-x-2 items-center">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
