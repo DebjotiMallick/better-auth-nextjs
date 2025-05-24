@@ -375,7 +375,7 @@ export default function UserCard(props: {
                                 setTwoFactorVerifyURI(ctx.data.totpURI);
                                 // toast.success("2FA enabled successfully");
                                 // setTwoFactorDialog(false);
-                                onTwoFactorChange?.();
+                                // onTwoFactorChange?.();
                               },
                             },
                           });
