@@ -198,13 +198,7 @@ const Navbar = () => {
                 href="/signin"
                 className="transition-colors hover:text-foreground/80 text-foreground/60"
               >
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link
-                href="/signup"
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                <Button>Sign Up</Button>
+                <Button>Sign In</Button>
               </Link>
             </>
           )}
@@ -284,13 +278,6 @@ const Navbar = () => {
                         <Button variant="outline" className="w-full">
                           Sign In
                         </Button>
-                      </Link>
-                      <Link
-                        href="/signup"
-                        className="w-full"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <Button className="w-full">Sign Up</Button>
                       </Link>
                     </>
                   )}

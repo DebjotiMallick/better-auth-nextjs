@@ -91,52 +91,6 @@ export default function UserCard(props: {
           </div>
         </div>
 
-        {session?.user.emailVerified ? null : (
-          <Alert className="mt-6 w-full">
-            <AlertTitle className="flex items-center gap-2">
-              <MailWarning className="h-4 w-4" />
-              Verify Your Email Address
-            </AlertTitle>
-            <AlertDescription className="text-muted-foreground">
-              Please verify your email address. Check your inbox for the
-              verification email. If you haven&apos;t received the email, click
-              the button below to resend.
-            </AlertDescription>
-            <Button
-              size="default"
-              variant="outline"
-              className="mt-2 w-full sm:w-[240px] h-10 px-24 flex items-center justify-center"
-              onClick={async () => {
-                await authClient.sendVerificationEmail(
-                  {
-                    email: session?.user.email || "",
-                    callbackURL: "/email-verified",
-                  },
-                  {
-                    onRequest() {
-                      setEmailVerificationPending(true);
-                    },
-                    onError(context) {
-                      toast.error(context.error.message);
-                      setEmailVerificationPending(false);
-                    },
-                    onSuccess() {
-                      toast.success("Verification email sent successfully");
-                      setEmailVerificationPending(false);
-                    },
-                  }
-                );
-              }}
-            >
-              {emailVerificationPending ? (
-                <Loader2 size={15} className="animate-spin" />
-              ) : (
-                "Resend Verification Email"
-              )}
-            </Button>
-          </Alert>
-        )}
-
         <div className="border-l-2 px-2 w-max gap-1 flex flex-col">
           <p className="text-xs font-medium ">Active Sessions</p>
           {props.activeSessions

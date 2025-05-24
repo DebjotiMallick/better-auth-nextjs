@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import { adminClient, twoFactorClient } from "better-auth/client/plugins"
+import { adminClient, twoFactorClient } from "better-auth/client/plugins";
 import { toast } from "sonner";
 
 export const authClient = createAuthClient({
@@ -7,18 +7,18 @@ export const authClient = createAuthClient({
   plugins: [
     adminClient(),
     twoFactorClient({
-			onTwoFactorRedirect() {
-				window.location.href = "/two-factor";
-			},
-		}),
+      onTwoFactorRedirect() {
+        window.location.href = "/two-factor";
+      },
+    }),
   ],
   fetchOptions: {
-		onError(e) {
-			if (e.error.status === 429) {
-				toast.error("Too many requests. Please try again later.");
-			}
-		},
-	},
+    onError(e) {
+      if (e.error.status === 429) {
+        toast.error("Too many requests. Please try again later.");
+      }
+    },
+  },
 });
 
 export const { signIn, signUp, signOut, useSession } = authClient;

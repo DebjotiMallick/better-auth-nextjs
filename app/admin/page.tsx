@@ -49,6 +49,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
@@ -205,7 +206,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <Label htmlFor="password">Password</Label>
-                  <Input
+                  <PasswordInput
                     id="password"
                     type="password"
                     value={newUser.password}
