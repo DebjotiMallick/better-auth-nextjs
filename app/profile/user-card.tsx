@@ -49,8 +49,9 @@ export default function UserCard(props: {
   session: Session | null;
   activeSessions: Session["session"][];
   isLoading?: boolean;
+  onTwoFactorChange?: () => void;
 }) {
-  const { session, isLoading = false } = props;
+  const { session, isLoading = false, onTwoFactorChange } = props;
   const router = useRouter();
   const [isTerminating, setIsTerminating] = useState<string>();
   const [isPendingTwoFa, setIsPendingTwoFa] = useState<boolean>(false);
@@ -338,6 +339,7 @@ export default function UserCard(props: {
                               onSuccess() {
                                 toast("2FA disabled successfully");
                                 setTwoFactorDialog(false);
+                                onTwoFactorChange?.();
                               },
                             },
                           });
@@ -357,6 +359,7 @@ export default function UserCard(props: {
                                   setIsPendingTwoFa(false);
                                   setTwoFaPassword("");
                                   setTwoFactorDialog(false);
+                                  onTwoFactorChange?.();
                                 },
                               },
                             });
@@ -372,6 +375,7 @@ export default function UserCard(props: {
                                 setTwoFactorVerifyURI(ctx.data.totpURI);
                                 // toast.success("2FA enabled successfully");
                                 // setTwoFactorDialog(false);
+                                onTwoFactorChange?.();
                               },
                             },
                           });

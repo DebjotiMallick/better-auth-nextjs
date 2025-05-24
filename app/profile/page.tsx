@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [activeSessions, setActiveSessions] = useState<ActiveSessionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +39,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [router]);
+  }, [router, refreshKey]);
 
   if (error && !isLoading) {
     return (
@@ -55,6 +56,7 @@ export default function DashboardPage() {
           session={session}
           activeSessions={activeSessions}
           isLoading={isLoading}
+          onTwoFactorChange={() => setRefreshKey((prev) => prev + 1)}
         />
       </div>
     </div>
