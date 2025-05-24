@@ -15,8 +15,6 @@ import { Loader2 } from "lucide-react";
 import { signIn } from "@/lib/auth-client";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export default function SignIn() {
