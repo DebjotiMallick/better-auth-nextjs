@@ -51,6 +51,12 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { PasswordInput } from "@/components/ui/password-input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
@@ -438,110 +444,139 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            handleEditUser(
-                              user.id,
-                              (user.role as UserRole) || "user"
-                            )
-                          }
-                          disabled={isLoading?.startsWith("edit")}
-                        >
-                          {isLoading === `edit-${user.id}` ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Pencil className="h-4 w-4" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteUser(user.id)}
-                          disabled={isLoading?.startsWith("delete")}
-                        >
-                          {isLoading === `delete-${user.id}` ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash className="h-4 w-4" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleRevokeSessions(user.id)}
-                          disabled={isLoading?.startsWith("revoke")}
-                        >
-                          {isLoading === `revoke-${user.id}` ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <RefreshCw className="h-4 w-4" />
-                          )}
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleImpersonateUser(user.id)}
-                          disabled={isLoading?.startsWith("impersonate")}
-                        >
-                          {isLoading === `impersonate-${user.id}` ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <>
-                              <UserCircle className="h-4 w-4 mr-2" />
-                              Impersonate
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={async () => {
-                            setBanForm({
-                              userId: user.id,
-                              reason: "",
-                              expirationDate: undefined,
-                            });
-                            if (user.banned) {
-                              setIsLoading(`ban-${user.id}`);
-                              await authClient.admin.unbanUser(
-                                {
-                                  userId: user.id,
-                                },
-                                {
-                                  onError(context) {
-                                    toast.error(
-                                      context.error.message ||
-                                        "Failed to unban user"
-                                    );
-                                    setIsLoading(undefined);
-                                  },
-                                  onSuccess() {
-                                    queryClient.invalidateQueries({
-                                      queryKey: ["users"],
-                                    });
-                                    toast.success("User unbanned successfully");
-                                  },
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  handleEditUser(
+                                    user.id,
+                                    (user.role as UserRole) || "user"
+                                  )
                                 }
-                              );
-                              queryClient.invalidateQueries({
-                                queryKey: ["users"],
+                                disabled={isLoading?.startsWith("edit")}
+                              >
+                                {isLoading === `edit-${user.id}` ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Pencil className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Edit Role</p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeleteUser(user.id)}
+                                disabled={isLoading?.startsWith("delete")}
+                              >
+                                {isLoading === `delete-${user.id}` ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Delete User</p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRevokeSessions(user.id)}
+                                disabled={isLoading?.startsWith("revoke")}
+                              >
+                                {isLoading === `revoke-${user.id}` ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <RefreshCw className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Revoke Sessions</p>
+                            </TooltipContent>
+                          </Tooltip>
+
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleImpersonateUser(user.id)}
+                            disabled={isLoading?.startsWith("impersonate")}
+                          >
+                            {isLoading === `impersonate-${user.id}` ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <>
+                                <UserCircle className="h-4 w-4 mr-2" />
+                                Impersonate
+                              </>
+                            )}
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              setBanForm({
+                                userId: user.id,
+                                reason: "",
+                                expirationDate: undefined,
                               });
-                            } else {
-                              setIsBanDialogOpen(true);
-                            }
-                          }}
-                          disabled={isLoading?.startsWith("ban")}
-                        >
-                          {isLoading === `ban-${user.id}` ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : user.banned ? (
-                            "Unban"
-                          ) : (
-                            "Ban"
-                          )}
-                        </Button>
+                              if (user.banned) {
+                                setIsLoading(`ban-${user.id}`);
+                                await authClient.admin.unbanUser(
+                                  {
+                                    userId: user.id,
+                                  },
+                                  {
+                                    onError(context) {
+                                      toast.error(
+                                        context.error.message ||
+                                          "Failed to unban user"
+                                      );
+                                      setIsLoading(undefined);
+                                    },
+                                    onSuccess() {
+                                      queryClient.invalidateQueries({
+                                        queryKey: ["users"],
+                                      });
+                                      toast.success(
+                                        "User unbanned successfully"
+                                      );
+                                    },
+                                  }
+                                );
+                                queryClient.invalidateQueries({
+                                  queryKey: ["users"],
+                                });
+                              } else {
+                                setIsBanDialogOpen(true);
+                              }
+                            }}
+                            disabled={isLoading?.startsWith("ban")}
+                          >
+                            {isLoading === `ban-${user.id}` ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : user.banned ? (
+                              "Unban"
+                            ) : (
+                              "Ban"
+                            )}
+                          </Button>
+                        </TooltipProvider>
                       </div>
                     </TableCell>
                   </TableRow>
