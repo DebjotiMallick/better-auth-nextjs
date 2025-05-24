@@ -39,6 +39,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -75,6 +76,8 @@ export default function AdminDashboard() {
     reason: "",
     expirationDate: undefined as Date | undefined,
   });
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   // Added twoFactorEnabled as a type in listUsers response
   type UserRole = "user" | "admin";
@@ -159,10 +162,16 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
-    setIsLoading(`delete-${id}`);
+  const handleDeleteClick = (userId: string) => {
+    setUserToDelete(userId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsLoading(`delete-${userToDelete}`);
     try {
-      await authClient.admin.removeUser({ userId: id });
+      await authClient.admin.removeUser({ userId: userToDelete });
       toast.success("User deleted successfully");
       queryClient.invalidateQueries({
         queryKey: ["users"],
@@ -171,6 +180,8 @@ export default function AdminDashboard() {
       toast.error(error.message || "Failed to delete user");
     } finally {
       setIsLoading(undefined);
+      setIsDeleteDialogOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -494,7 +505,7 @@ export default function AdminDashboard() {
                               <Button
                                 variant="destructive"
                                 size="sm"
-                                onClick={() => handleDeleteUser(user.id)}
+                                onClick={() => handleDeleteClick(user.id)}
                                 disabled={isLoading?.startsWith("delete")}
                               >
                                 {isLoading === `delete-${user.id}` ? (
@@ -605,6 +616,36 @@ export default function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the
+              user.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={isLoading?.startsWith("delete")}
+            >
+              {isLoading?.startsWith("delete") ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              Delete User
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
