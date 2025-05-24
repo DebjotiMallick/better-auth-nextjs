@@ -17,6 +17,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ export default function SignIn() {
                   Forgot password?
                 </Link>
               </div>
-              <Input
+              <PasswordInput
                 id="password"
                 type="password"
                 required

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -49,10 +50,10 @@ import { MailWarning } from "lucide-react";
 export default function UserCard(props: {
   session: Session | null;
   activeSessions: Session["session"][];
+  isLoading?: boolean;
 }) {
+  const { session, isLoading = false } = props;
   const router = useRouter();
-  const { data } = useSession();
-  const session = data || props.session;
   const [isTerminating, setIsTerminating] = useState<string>();
   const [isPendingTwoFa, setIsPendingTwoFa] = useState<boolean>(false);
   const [twoFaPassword, setTwoFaPassword] = useState<string>("");
@@ -61,6 +62,52 @@ export default function UserCard(props: {
   const [isSignOut, setIsSignOut] = useState<boolean>(false);
   const [emailVerificationPending, setEmailVerificationPending] =
     useState<boolean>(false);
+
+  if (isLoading) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto animate-pulse">
+        <CardHeader>
+          <div className="flex items-center space-x-4">
+            <div className="h-12 w-12 rounded-full bg-muted" />
+            <div className="space-y-2">
+              <div className="h-4 w-32 bg-muted rounded" />
+              <div className="h-3 w-24 bg-muted rounded" />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <div className="h-4 w-1/4 bg-muted rounded" />
+            <div className="h-10 w-full bg-muted rounded" />
+          </div>
+          <div className="space-y-2">
+            <div className="h-4 w-1/4 bg-muted rounded" />
+            <div className="h-10 w-full bg-muted rounded" />
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="h-5 w-5 bg-muted rounded" />
+            <div className="h-4 w-1/3 bg-muted rounded" />
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <div className="h-10 w-24 bg-muted rounded" />
+          <div className="h-10 w-24 bg-muted rounded" />
+        </CardFooter>
+      </Card>
+    );
+  }
+
+  if (!session) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto p-8 text-center">
+        <CardTitle className="mb-4">Session Expired or Not Found</CardTitle>
+        <CardDescription className="mb-6">
+          Please sign in to view your profile.
+        </CardDescription>
+        <Button onClick={() => router.push("/signin")}>Go to Sign In</Button>
+      </Card>
+    );
+  }
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>

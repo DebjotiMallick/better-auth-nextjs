@@ -39,6 +39,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
@@ -75,14 +76,25 @@ export default function AdminDashboard() {
     reason: "",
     expirationDate: undefined as Date | undefined,
   });
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+
+  // Added twoFactorEnabled as a type in listUsers response
   type UserRole = "user" | "admin";
+  type ListUsersReturn = Awaited<ReturnType<typeof authClient.admin.listUsers>>;
+  type BaseUser = ListUsersReturn["users"][number];
+  interface UserWithTwoFactor extends BaseUser {
+    twoFactorEnabled?: boolean;
+  }
   const [editingUser, setEditingUser] = useState<{
     id: string;
     currentRole: UserRole;
   } | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole>("user");
 
-  const { data: users, isLoading: isUsersLoading } = useQuery({
+  const { data: users, isLoading: isUsersLoading } = useQuery<
+    UserWithTwoFactor[]
+  >({
     queryKey: ["users"],
     queryFn: async () => {
       const data = await authClient.admin.listUsers(
@@ -150,10 +162,16 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteUser = async (id: string) => {
-    setIsLoading(`delete-${id}`);
+  const handleDeleteClick = (userId: string) => {
+    setUserToDelete(userId);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsLoading(`delete-${userToDelete}`);
     try {
-      await authClient.admin.removeUser({ userId: id });
+      await authClient.admin.removeUser({ userId: userToDelete });
       toast.success("User deleted successfully");
       queryClient.invalidateQueries({
         queryKey: ["users"],
@@ -162,6 +180,8 @@ export default function AdminDashboard() {
       toast.error(error.message || "Failed to delete user");
     } finally {
       setIsLoading(undefined);
+      setIsDeleteDialogOpen(false);
+      setUserToDelete(null);
     }
   };
 
@@ -231,7 +251,7 @@ export default function AdminDashboard() {
                 <DialogTitle>Create New User</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleCreateUser} className="space-y-4">
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
@@ -243,7 +263,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <PasswordInput
                     id="password"
@@ -255,7 +275,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
                   <Input
                     id="name"
@@ -266,7 +286,7 @@ export default function AdminDashboard() {
                     required
                   />
                 </div>
-                <div>
+                <div className="space-y-2">
                   <Label htmlFor="role">Role</Label>
                   <Select
                     value={newUser.role}
@@ -422,28 +442,38 @@ export default function AdminDashboard() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Banned</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead className="text-center">Role</TableHead>
+                  <TableHead className="text-center">2FA</TableHead>
+                  <TableHead className="text-center">Banned</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users?.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell>{user.email}</TableCell>
                     <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.role || "user"}</TableCell>
-                    <TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell className="text-center">
+                      {user.role || "user"}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {user.twoFactorEnabled ? (
+                        <Badge variant="default">Enabled</Badge>
+                      ) : (
+                        <Badge variant="destructive">Disabled</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-center">
                       {user.banned ? (
                         <Badge variant="destructive">Yes</Badge>
                       ) : (
-                        <Badge variant="outline">No</Badge>
+                        <Badge variant="default">No</Badge>
                       )}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
+                    <TableCell className="text-center">
+                      <div className="flex justify-center space-x-2 items-center">
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -475,7 +505,7 @@ export default function AdminDashboard() {
                               <Button
                                 variant="destructive"
                                 size="sm"
-                                onClick={() => handleDeleteUser(user.id)}
+                                onClick={() => handleDeleteClick(user.id)}
                                 disabled={isLoading?.startsWith("delete")}
                               >
                                 {isLoading === `delete-${user.id}` ? (
@@ -586,6 +616,36 @@ export default function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete the
+              user.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={isLoading?.startsWith("delete")}
+            >
+              {isLoading?.startsWith("delete") ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              Delete User
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
