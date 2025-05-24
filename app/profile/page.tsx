@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import UserCard from "./user-card";
 import type { Session as AuthSessionType } from "@/lib/auth-types";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 type ActiveSessionItem = AuthSessionType["session"];
 
@@ -14,7 +15,6 @@ export default function DashboardPage() {
   const [activeSessions, setActiveSessions] = useState<ActiveSessionItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,7 +39,7 @@ export default function DashboardPage() {
     };
 
     fetchData();
-  }, [router, refreshKey]);
+  }, [router]);
 
   if (error && !isLoading) {
     return (
@@ -49,6 +49,16 @@ export default function DashboardPage() {
     );
   }
 
+  const handleTwoFactorChange = async () => {
+    try {
+      const sessionData = await authClient.getSession();
+      setSession(sessionData?.data as AuthSessionType);
+    } catch (err) {
+      console.error("Error updating session:", err);
+      toast.error("Failed to update two-factor status");
+    }
+  };
+
   return (
     <div className="w-full px-4 pt-8">
       <div className="w-full px-4 flex justify-center items-center">
@@ -56,7 +66,7 @@ export default function DashboardPage() {
           session={session}
           activeSessions={activeSessions}
           isLoading={isLoading}
-          onTwoFactorChange={() => setRefreshKey((prev) => prev + 1)}
+          onTwoFactorChange={handleTwoFactorChange}
         />
       </div>
     </div>

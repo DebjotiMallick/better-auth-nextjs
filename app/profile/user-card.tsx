@@ -329,59 +329,50 @@ export default function UserCard(props: {
                           return;
                         }
                         setIsPendingTwoFa(true);
-                        if (session?.user.twoFactorEnabled) {
-                          await authClient.twoFactor.disable({
-                            password: twoFaPassword,
-                            fetchOptions: {
-                              onError(context) {
-                                toast.error(context.error.message);
-                              },
-                              onSuccess() {
-                                toast("2FA disabled successfully");
-                                setTwoFactorDialog(false);
-                                onTwoFactorChange?.();
-                              },
-                            },
-                          });
-                        } else {
-                          if (twoFactorVerifyURI) {
-                            await authClient.twoFactor.verifyTotp({
-                              code: twoFaPassword,
-                              fetchOptions: {
-                                onError(context) {
-                                  setIsPendingTwoFa(false);
-                                  setTwoFaPassword("");
-                                  toast.error(context.error.message);
-                                },
-                                onSuccess() {
-                                  toast("2FA enabled successfully");
-                                  setTwoFactorVerifyURI("");
-                                  setIsPendingTwoFa(false);
-                                  setTwoFaPassword("");
-                                  setTwoFactorDialog(false);
-                                  onTwoFactorChange?.();
-                                },
-                              },
+                        try {
+                          if (session?.user.twoFactorEnabled) {
+                            const result = await authClient.twoFactor.disable({
+                              password: twoFaPassword,
                             });
-                            return;
+                            if (result.error) {
+                              throw new Error(result.error.message);
+                            }
+                            toast.success("2FA disabled successfully");
+                            setTwoFactorDialog(false);
+                            onTwoFactorChange?.();
+                          } else {
+                            if (twoFactorVerifyURI) {
+                              const result =
+                                await authClient.twoFactor.verifyTotp({
+                                  code: twoFaPassword,
+                                });
+                              if (result.error) {
+                                throw new Error(result.error.message);
+                              }
+                              toast.success("2FA enabled successfully");
+                              setTwoFactorVerifyURI("");
+                              setTwoFactorDialog(false);
+                              onTwoFactorChange?.();
+                            } else {
+                              const result = await authClient.twoFactor.enable({
+                                password: twoFaPassword,
+                              });
+                              if (result.error) {
+                                throw new Error(result.error.message);
+                              }
+                              setTwoFactorVerifyURI(result.data.totpURI);
+                            }
                           }
-                          await authClient.twoFactor.enable({
-                            password: twoFaPassword,
-                            fetchOptions: {
-                              onError(context) {
-                                toast.error(context.error.message);
-                              },
-                              onSuccess(ctx) {
-                                setTwoFactorVerifyURI(ctx.data.totpURI);
-                                // toast.success("2FA enabled successfully");
-                                // setTwoFactorDialog(false);
-                                // onTwoFactorChange?.();
-                              },
-                            },
-                          });
+                        } catch (error) {
+                          toast.error(
+                            error instanceof Error
+                              ? error.message
+                              : "An error occurred"
+                          );
+                        } finally {
+                          setIsPendingTwoFa(false);
+                          setTwoFaPassword("");
                         }
-                        setIsPendingTwoFa(false);
-                        setTwoFaPassword("");
                       }}
                     >
                       {isPendingTwoFa ? (
