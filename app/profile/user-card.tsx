@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
@@ -44,7 +43,6 @@ import { toast } from "sonner";
 import { UAParser } from "ua-parser-js";
 import QRCode from "react-qr-code";
 import CopyButton from "@/components/ui/copy-button";
-import { MailWarning } from "lucide-react";
 
 export default function UserCard(props: {
   session: Session | null;
@@ -59,8 +57,6 @@ export default function UserCard(props: {
   const [twoFactorDialog, setTwoFactorDialog] = useState<boolean>(false);
   const [twoFactorVerifyURI, setTwoFactorVerifyURI] = useState<string>("");
   const [isSignOut, setIsSignOut] = useState<boolean>(false);
-  const [emailVerificationPending, setEmailVerificationPending] =
-    useState<boolean>(false);
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
